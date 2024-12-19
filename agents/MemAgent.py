@@ -1,21 +1,33 @@
 from typing import Dict, List
 from ..base import BaseMemory
+class MemoryAgent:
+    """Manages different types of memory"""
+    def __init__(self, short_term: BaseMemory, long_term: BaseMemory):
+        self.short_term = short_term
+        self.long_term = long_term
+        
+    def add_to_short_term(self, data: Dict[str, Any]):
+        self.short_term.save_context(data, {})
+        
+    def add_to_long_term(self, data: Dict[str, Any]):
+        self.long_term.save_context(data, {})
+
 
 class BaseMemory(ABC):
-    """记忆系统的基础抽象类"""
+    """Base abstract class for memory system"""
     
     @abstractmethod
     def add(self, data: Any) -> None:
-        """添加记忆"""
+        """Add memory"""
         pass
     
     @abstractmethod
     def get(self, query: Any) -> Any:
-        """获取记忆"""
+        """Get memory"""
         pass
 
 class ShortTermMemory(BaseMemory):
-    """短期记忆实现"""
+    """Short-term memory implementation"""
     
     def __init__(self, max_items=10):
         self.memory = []
@@ -30,7 +42,7 @@ class ShortTermMemory(BaseMemory):
         return self.memory
 
 class LongTermMemory(BaseMemory):
-    """长期记忆实现"""
+    """Long-term memory implementation"""
     
     def __init__(self):
         self.memory = {}
