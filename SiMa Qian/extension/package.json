@@ -1,0 +1,35 @@
+{
+  "name": "sima-qian-extension",
+  "version": "1.0.0",
+  "description": "史记助手 - 您的AI历史研究助手",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@headlessui/react": "^1.7.17",
+    "@heroicons/react": "^2.0.18",
+    "@langchain/community": "^0.0.10",
+    "@langchain/core": "^0.1.7",
+    "@langchain/openai": "^0.0.9",
+    "langchain": "^0.0.200",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.20.1"
+  },
+  "devDependencies": {
+    "@crxjs/vite-plugin": "^2.0.0-beta.21",
+    "@types/chrome": "^0.0.246",
+    "@types/node": "^20.8.2",
+    "@types/react": "^18.2.42",
+    "@types/react-dom": "^18.2.17",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.3.6",
+    "typescript": "^5.2.2",
+    "vite": "^4.4.9"
+  }
+} 

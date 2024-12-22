@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "史记助手",
+  "version": "1.0.0",
+  "description": "您的AI历史研究助手",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting"
+  ],
+  "action": {
+    "default_popup": "dist/popup.html"
+  },
+  "options_page": "dist/options.html",
+  "background": {
+    "service_worker": "dist/background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["dist/content.js"],
+      "css": ["dist/content.css"]
+    }
+  ],
+  "host_permissions": [
+    "https://unpkg.com/*",
+    "https://cdn.tailwindcss.com/*"
+  ]
+} 

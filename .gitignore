@@ -1,4 +1,4 @@
 hello.py
 test.py
 .env
-main.py
+__pycache__/

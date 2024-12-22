@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historian - Web版本</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Historian</a>
+            <div class="d-flex align-items-center">
+                <select class="form-select form-select-sm me-2" id="languageSelect">
+                    <option value="zh">中文</option>
+                    <option value="en">English</option>
+                </select>
+                <select class="form-select form-select-sm" id="themeSelect">
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
+                </select>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- 左侧设置面板 -->
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">设置</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="settingsForm">
+                            <!-- API设置 -->
+                            <div class="mb-3">
+                                <label class="form-label">API设置</label>
+                                <input type="text" class="form-control mb-2" name="base_url" placeholder="API Base URL" value="https://api.openai.com/v1">
+                                <input type="password" class="form-control mb-2" name="api_key" placeholder="API Key">
+                                <input type="text" class="form-control" name="org_id" placeholder="Organization ID (可选)">
+                            </div>
+
+                            <!-- 模型设置 -->
+                            <div class="mb-3">
+                                <label class="form-label">模型设置</label>
+                                <select class="form-select mb-2" name="model" id="modelSelect">
+                                    <option value="gpt-3.5-turbo">GPT-3.5-Turbo</option>
+                                    <option value="gpt-4">GPT-4</option>
+                                    <option value="gpt-4-turbo">GPT-4-Turbo</option>
+                                    <option value="claude-2">Claude-2</option>
+                                    <option value="custom">自定义模型</option>
+                                </select>
+
+                                <!-- 自定义模型设置 -->
+                                <div id="customModelSettings" class="mb-3" style="display: none;">
+                                    <input type="text" class="form-control mb-2" name="custom_model_name" placeholder="模型名称">
+                                </div>
+
+                                <!-- 模型参数 -->
+                                <div class="model-params">
+                                    <label class="form-label">温度 (0-2)</label>
+                                    <input type="range" class="form-range" name="temperature" min="0" max="2" step="0.1" value="0.7">
+                                    <span id="temperatureValue">0.7</span>
+
+                                    <label class="form-label">Top P (0-1)</label>
+                                    <input type="range" class="form-range" name="top_p" min="0" max="1" step="0.1" value="1.0">
+                                    <span id="topPValue">1.0</span>
+
+                                    <label class="form-label">Top K (0-100)</label>
+                                    <input type="range" class="form-range" name="top_k" min="0" max="100" step="1" value="50">
+                                    <span id="topKValue">50</span>
+
+                                    <label class="form-label">最大令牌数 (1-4096)</label>
+                                    <input type="range" class="form-range" name="max_tokens" min="1" max="4096" step="1" value="2000">
+                                    <span id="maxTokensValue">2000</span>
+
+                                    <label class="form-label">存在惩罚 (-2 to 2)</label>
+                                    <input type="range" class="form-range" name="presence_penalty" min="-2" max="2" step="0.1" value="0">
+                                    <span id="presencePenaltyValue">0</span>
+
+                                    <label class="form-label">频率惩罚 (-2 to 2)</label>
+                                    <input type="range" class="form-range" name="frequency_penalty" min="-2" max="2" step="0.1" value="0">
+                                    <span id="frequencyPenaltyValue">0</span>
+                                </div>
+                            </div>
+
+                            <!-- RAG代理设置 -->
+                            <div class="mb-3">
+                                <label class="form-label">RAG代理</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="use_rag" id="useRag">
+                                    <label class="form-check-label" for="useRag">启用RAG</label>
+                                </div>
+                                <div class="ms-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="use_embedding" id="useEmbedding">
+                                        <label class="form-check-label" for="useEmbedding">Embedding代理</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="use_database" id="useDatabase">
+                                        <label class="form-check-label" for="useDatabase">数据库代理</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="use_retrieval" id="useRetrieval">
+                                        <label class="form-check-label" for="useRetrieval">检索代理</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="use_rerank" id="useRerank">
+                                        <label class="form-check-label" for="useRerank">重排序代理</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 工具代理设置 -->
+                            <div class="mb-3">
+                                <label class="form-label">工具代理</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="use_tool" id="useTool">
+                                    <label class="form-check-label" for="useTool">启用工具代理</label>
+                                </div>
+                                <div class="ms-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="use_code_tool" id="useCodeTool">
+                                        <label class="form-check-label" for="useCodeTool">代码工具</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="use_shell_tool" id="useShellTool">
+                                        <label class="form-check-label" for="useShellTool">Shell工具</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="use_web_tool" id="useWebTool">
+                                        <label class="form-check-label" for="useWebTool">Web工具</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="use_file_tool" id="useFileTool">
+                                        <label class="form-check-label" for="useFileTool">文件工具</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 记忆代理设置 -->
+                            <div class="mb-3">
+                                <label class="form-label">记忆代理</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="use_memory" id="useMemory">
+                                    <label class="form-check-label" for="useMemory">启用记忆代理</label>
+                                </div>
+                                <div class="ms-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="use_conversation_memory" id="useConversationMemory">
+                                        <label class="form-check-label" for="useConversationMemory">对话记忆</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="use_summary_memory" id="useSummaryMemory">
+                                        <label class="form-check-label" for="useSummaryMemory">摘要记忆</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="use_vector_memory" id="useVectorMemory">
+                                        <label class="form-check-label" for="useVectorMemory">向量记忆</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 路由代理设置 -->
+                            <div class="mb-3">
+                                <label class="form-label">路由代理</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="use_router" id="useRouter">
+                                    <label class="form-check-label" for="useRouter">启用路由代理</label>
+                                </div>
+                                <div class="ms-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="use_output_agent" id="useOutputAgent">
+                                        <label class="form-check-label" for="useOutputAgent">输出代理</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="use_evaluation_agent" id="useEvaluationAgent">
+                                        <label class="form-check-label" for="useEvaluationAgent">评估代理</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="use_prompt_agent" id="usePromptAgent">
+                                        <label class="form-check-label" for="usePromptAgent">提示代理</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 推理代理设置 -->
+                            <div class="mb-3">
+                                <label class="form-label">推理代理</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="use_reasoning" id="useReasoning">
+                                    <label class="form-check-label" for="useReasoning">启用推理代理</label>
+                                </div>
+                                <div class="ms-4" id="reasoningTechniques">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="zero_shot" id="zeroShot">
+                                        <label class="form-check-label" for="zeroShot">零样本推理</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="few_shot" id="fewShot">
+                                        <label class="form-check-label" for="fewShot">少样本推理</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="one_shot" id="oneShot">
+                                        <label class="form-check-label" for="oneShot">单样本推理</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="cot" id="cot">
+                                        <label class="form-check-label" for="cot">思维链推理</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="least_to_most" id="leastToMost">
+                                        <label class="form-check-label" for="leastToMost">最少到最多推理</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="self_consistency" id="selfConsistency">
+                                        <label class="form-check-label" for="selfConsistency">自洽性推理</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="react" id="react">
+                                        <label class="form-check-label" for="react">ReAct推理</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="reflection" id="reflection">
+                                        <label class="form-check-label" for="reflection">反思推理</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="tot" id="tot">
+                                        <label class="form-check-label" for="tot">思维树推理</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 中间主要内容区 -->
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">任务输入</h5>
+                    </div>
+                    <div class="card-body">
+                        <textarea class="form-control mb-3" id="taskInput" rows="5" placeholder="请输入您的任务..."></textarea>
+                        <button class="btn btn-primary" id="submitTask">���交任务</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">输出结果</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="output" class="border rounded p-3 bg-light"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧工作流面板 -->
+            <div class="col-md-3">
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">工作流</h5>
+                        <div class="btn-group">
+                            <button class="btn btn-success btn-sm" id="addWorkflowStep">
+                                <i class="bi bi-plus"></i> 添加步骤
+                            </button>
+                            <button class="btn btn-primary btn-sm" id="saveWorkflow">
+                                <i class="bi bi-save"></i> 保存
+                            </button>
+                            <button class="btn btn-info btn-sm" id="loadWorkflow">
+                                <i class="bi bi-folder-open"></i> 加载
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- 工作流步骤列表 -->
+                        <div id="workflowSteps" class="mb-3">
+                            <!-- 步骤将通过JavaScript动态添加 -->
+                        </div>
+                        
+                        <!-- 工作流操作按钮 -->
+                        <div class="btn-group w-100 mb-3">
+                            <button class="btn btn-outline-secondary btn-sm" id="moveStepUp">
+                                <i class="bi bi-arrow-up"></i> 上移
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" id="moveStepDown">
+                                <i class="bi bi-arrow-down"></i> 下移
+                            </button>
+                            <button class="btn btn-outline-danger btn-sm" id="deleteStep">
+                                <i class="bi bi-trash"></i> 删除
+                            </button>
+                        </div>
+                        
+                        <!-- 已保存的工作流列表 -->
+                        <div class="list-group" id="workflowList">
+                            <!-- 工作流��表将通过JavaScript动态添加 -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 日志查看器 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">日志查看器</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="logViewer" class="border rounded p-3 bg-light" style="height: 300px; overflow-y: auto;">
+                            <!-- 日志内容将通过JavaScript动态添加 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 状态栏 -->
+    <div class="fixed-bottom bg-light border-top p-2">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <div id="statusMessage">就绪</div>
+            <div class="d-flex align-items-center">
+                <div id="progressBar" class="progress" style="width: 200px; display: none;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html> 

@@ -1,0 +1,251 @@
+/* 浅色主题 */
+:root,
+[data-theme="light"] {
+    --bg-color: #f8f9fa;
+    --text-color: #212529;
+    --card-bg: #ffffff;
+    --card-border: rgba(0, 0, 0, 0.125);
+    --input-bg: #ffffff;
+    --input-border: #ced4da;
+    --input-text: #495057;
+    --btn-primary-bg: #0d6efd;
+    --btn-primary-text: #ffffff;
+    --btn-secondary-bg: #6c757d;
+    --btn-secondary-text: #ffffff;
+    --success-color: #198754;
+    --error-color: #dc3545;
+    --log-bg: #f8f9fa;
+    --log-text: #666666;
+    --status-bar-bg: #f8f9fa;
+    --progress-bar-bg: #0d6efd;
+}
+
+/* 深色主题 */
+[data-theme="dark"] {
+    --bg-color: #212529;
+    --text-color: #f8f9fa;
+    --card-bg: #343a40;
+    --card-border: rgba(255, 255, 255, 0.125);
+    --input-bg: #495057;
+    --input-border: #6c757d;
+    --input-text: #f8f9fa;
+    --btn-primary-bg: #0d6efd;
+    --btn-primary-text: #ffffff;
+    --btn-secondary-bg: #6c757d;
+    --btn-secondary-text: #ffffff;
+    --success-color: #198754;
+    --error-color: #dc3545;
+    --log-bg: #343a40;
+    --log-text: #adb5bd;
+    --status-bar-bg: #343a40;
+    --progress-bar-bg: #0d6efd;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.card {
+    background-color: var(--card-bg);
+    border-color: var(--card-border);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+    transition: background-color 0.3s;
+}
+
+.card-header {
+    background-color: var(--card-bg);
+    border-bottom: 1px solid var(--card-border);
+}
+
+.form-control,
+.form-select {
+    background-color: var(--input-bg);
+    border-color: var(--input-border);
+    color: var(--input-text);
+}
+
+.form-control:focus,
+.form-select:focus {
+    background-color: var(--input-bg);
+    border-color: var(--btn-primary-bg);
+    color: var(--input-text);
+}
+
+.form-range::-webkit-slider-thumb {
+    background: var(--btn-primary-bg);
+}
+
+.form-range::-moz-range-thumb {
+    background: var(--btn-primary-bg);
+}
+
+.form-check-input:checked {
+    background-color: var(--btn-primary-bg);
+    border-color: var(--btn-primary-bg);
+}
+
+#output {
+    min-height: 200px;
+    max-height: 500px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    font-family: monospace;
+    background-color: var(--input-bg);
+    color: var(--input-text);
+    border: 1px solid var(--input-border);
+    transition: background-color 0.3s;
+}
+
+#output.loading {
+    position: relative;
+    opacity: 0.7;
+}
+
+#output.loading::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30px;
+    height: 30px;
+    border: 3px solid var(--input-border);
+    border-top: 3px solid var(--btn-primary-bg);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.workflow-item {
+    cursor: pointer;
+    transition: background-color 0.2s;
+    background-color: var(--card-bg);
+    color: var(--text-color);
+}
+
+.workflow-item:hover {
+    background-color: var(--input-bg);
+}
+
+.workflow-item.active {
+    background-color: var(--input-bg);
+}
+
+.btn-group-sm > .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.error-message {
+    color: var(--error-color);
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+    border: 1px solid var(--error-color);
+    border-radius: 0.25rem;
+    background-color: rgba(220, 53, 69, 0.1);
+}
+
+.success-message {
+    color: var(--success-color);
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+    border: 1px solid var(--success-color);
+    border-radius: 0.25rem;
+    background-color: rgba(25, 135, 84, 0.1);
+}
+
+#logViewer {
+    background-color: var(--log-bg);
+    color: var(--log-text);
+    font-family: monospace;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    padding: 0.5rem;
+    transition: background-color 0.3s;
+}
+
+.log-entry {
+    margin-bottom: 0.25rem;
+    border-bottom: 1px solid var(--card-border);
+    padding-bottom: 0.25rem;
+}
+
+.fixed-bottom {
+    background-color: var(--status-bar-bg);
+    border-top: 1px solid var(--card-border);
+    color: var(--text-color);
+    transition: background-color 0.3s;
+}
+
+.progress {
+    background-color: var(--input-bg);
+}
+
+.progress-bar {
+    background-color: var(--progress-bar-bg);
+}
+
+/* 模型参数样式 */
+.model-params {
+    padding: 1rem;
+    background-color: var(--input-bg);
+    border-radius: 0.25rem;
+    margin-top: 0.5rem;
+}
+
+.model-params label {
+    display: block;
+    margin-top: 0.5rem;
+    color: var(--text-color);
+}
+
+.model-params span {
+    display: inline-block;
+    min-width: 2.5rem;
+    text-align: right;
+    margin-left: 0.5rem;
+    color: var(--text-color);
+}
+
+/* 代理组件样式 */
+.ms-4 {
+    border-left: 2px solid var(--card-border);
+    margin-top: 0.5rem;
+    padding-left: 1rem;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding: 0.5rem;
+    }
+    
+    .card {
+        margin-bottom: 0.5rem;
+    }
+    
+    .btn-group-sm > .btn {
+        width: 100%;
+        margin-bottom: 0.25rem;
+    }
+    
+    .model-params {
+        padding: 0.5rem;
+    }
+    
+    #logViewer {
+        height: 200px;
+    }
+    
+    .fixed-bottom {
+        position: static;
+        margin-top: 1rem;
+    }
+} 
